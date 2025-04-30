@@ -3,7 +3,7 @@ from connection import connect_to_mongodb
 # Conexión a la colección
 collection = connect_to_mongodb("EntregaDeMedicamentos", "historiaMedica")
 
-def GetHistoriaMedicaPorIdPaciente(patient_id: str):
+def ObtenerHistoriaMedicaPorIdPaciente(patient_id: str):
     if not patient_id:
         return "error", "El ID del paciente no puede estar vacío."
     
