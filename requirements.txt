@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+flask-cors
+pymongo
+gunicorn
+fhir.resources
