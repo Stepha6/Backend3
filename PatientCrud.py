@@ -6,7 +6,8 @@ import json
 # Conexión a colecciones
 pacientes_collection = connect_to_mongodb("SamplePatientService2", "pacientes")
 historia_collection = connect_to_mongodb("SamplePatientService2", "historiaMedica")
-medicamentos_collection = connect_to_mongodb("SamplePatientService2", "medicamentos")  # Nueva colección para medicamentos
+medicamentos_collection = connect_to_mongodb("SamplePatientService2", "medicamentos")
+medication_request_collection = connect_to_mongodb("SamplePatientService2", "medicationRequests")# Nueva colección para medicamentos
 
 # Obtener paciente por ID
 def GetPatientById(patient_id: str):
@@ -33,6 +34,18 @@ def WritePatient(patient_dict: dict):
         return "success", inserted_id
     else:
         return "errorInserting", None
+
+def WriteMedicationRequest(request_dict: dict):
+    try:
+        # Validación FHIR
+        med_request = MedicationRequest.model_validate(request_dict)
+        validated_data = med_request.model_dump()
+
+        # Insertar en MongoDB
+        result = medication_request_collection.insert_one(validated_data)
+        return "success", str(result.inserted_id)
+    except Exception as e:
+        return f"errorValidating: {str(e)}", None
 
 # Obtener paciente por identificador
 def GetPatientByIdentifier(patientSystem, patientValue):
