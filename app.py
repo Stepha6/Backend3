@@ -17,7 +17,7 @@ app = FastAPI()
 # Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://frontend3-jluw.onrender.com/patient"],  # Origen del frontend
+    allow_origins=["https://frontend3-jluw.onrender.com"],  # Origen del frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
