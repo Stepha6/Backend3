@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def connect_to_mongodb(db_name, collection_name):
-        uri = client = MongoClient(uri, server_api=ServerApi('1'))
+        uri = "mongodb+srv://s68106680:Tefa2006@cluster0.4o7he.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        client = client = MongoClient(uri, server_api=ServerApi('1'))
         db = client[db_name]
         collection = db[collection_name]
         return collection
