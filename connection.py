@@ -7,14 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def connect_to_mongodb(db_name, collection_name):
-    try:
-        # Obtener las credenciales de las variables de entorno
-        uri = os.getenv("MONGODB_URI")
-        
-        if not uri:
-            raise ValueError("La URI de MongoDB no está configurada en las variables de entorno")
-
-        client = MongoClient(uri, server_api=ServerApi('1'))
+        uri = client = MongoClient(uri, server_api=ServerApi('1'))
         db = client[db_name]
         collection = db[collection_name]
         return collection
