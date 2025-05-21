@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, Request
 import uvicorn
 from PatientCrud import GetPatientById, WritePatient, GetPatientByIdentifier
 from fastapi.middleware.cors import CORSMiddleware
+from patientCrud import WriteMedicationRequest
 
 app = FastAPI()
 
@@ -69,6 +70,17 @@ async def add_patient(request: Request):
         print("Error inesperado:", e)
         return JSONResponse(status_code=500, content={"detail": "Error interno del servidor"})
 
+@app.post("/medicationRequest", response_model=dict)
+async def create_medication_request(request: Request):
+    try:
+        data = await request.json()
+        status, inserted_id = WriteMedicationRequest(data)
+        if status == "success":
+            return {"_id": inserted_id}
+        else:
+            raise HTTPException(status_code=400, detail=status)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Obtener sugerencias de medicamentos compatibles
 @app.get("/medicamentos/sugerencias/{patient_id}")
