@@ -13,7 +13,7 @@ def connect_to_mongodb(db_name, collection_name):
         collection = db[collection_name]
         return collection
 
-    except Exception as e:
+        except Exception as e:
         # Manejo de excepciones para errores de conexión
-        print(f"Error al conectar con MongoDB: {e}")
-        return None
+                print(f"Error al conectar con MongoDB: {e}")
+                return None
