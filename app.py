@@ -64,19 +64,43 @@ async def get_patient_by_identifier(system: str, value: str):
 # Crear nuevo paciente
 @app.post("/patient")
 async def add_patient(request: Request):
-    data = await request.json()
-    if data.get("resourceType") != "Patient":
-        return JSONResponse(status_code=400, content={"detail": "Tipo de recurso incorrecto, se esperaba 'Patient'"})
-    status, patient_id = WritePatient(data)
-    ...
+    try:
+        data = await request.json()
+        if data.get("resourceType") != "Patient":
+            return JSONResponse(status_code=400, content={"detail": "Tipo de recurso incorrecto, se esperaba 'Patient'"})
+        
+        status, patient_id = WritePatient(data)
+
+        if status == "success":
+            return {"_id": patient_id}
+        elif status.startswith("errorValidating"):
+            return JSONResponse(status_code=400, content={"detail": status})
+        else:
+            return JSONResponse(status_code=500, content={"detail": f"Error interno: {status}"})
+    
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"detail": f"Excepción inesperada: {str(e)}"})
+
 
 @app.post("/medicationrequest")
 async def add_medication_request(request: Request):
-    data = await request.json()
-    if data.get("resourceType") != "MedicationRequest":
-        return JSONResponse(status_code=400, content={"detail": "Tipo de recurso incorrecto, se esperaba 'MedicationRequest'"})
-    status, medreq_id = WriteMedicationRequest(data)
-    ...
+    try:
+        data = await request.json()
+        if data.get("resourceType") != "MedicationRequest":
+            return JSONResponse(status_code=400, content={"detail": "Tipo de recurso incorrecto, se esperaba 'MedicationRequest'"})
+
+        status, medreq_id = WriteMedicationRequest(data)
+
+        if status == "success":
+            return {"_id": medreq_id}
+        elif status.startswith("errorValidating"):
+            return JSONResponse(status_code=400, content={"detail": status})
+        else:
+            return JSONResponse(status_code=500, content={"detail": f"Error interno: {status}"})
+    
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"detail": f"Excepción inesperada: {str(e)}"})
+
 
 # Crear solicitud de medicam
 
