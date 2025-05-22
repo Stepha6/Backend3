@@ -5,10 +5,10 @@ from fhir.resources.medicationrequest import MedicationRequest
 import json
 
 # Conexión a colecciones
-pacientes_collection = connect_to_mongodb("SamplePatientService2", "pacientes")
-historia_collection = connect_to_mongodb("SamplePatientService2", "historiaMedica")
-medicamentos_collection = connect_to_mongodb("SamplePatientService2", "medicamentos")
-medication_request_collection = connect_to_mongodb("SamplePatientService2", "medicationRequests")# Nueva colección para medicamentos
+pacientes_collection = connect_to_mongodb("SamplePatientService3", "pacientes")
+historia_collection = connect_to_mongodb("SamplePatientService3", "historiaMedica")
+medicamentos_collection = connect_to_mongodb("SamplePatientService3", "medicamentos")
+medication_request_collection = connect_to_mongodb("SamplePatientService3", "medicationRequests")# Nueva colección para medicamentos
 
 # Obtener paciente por ID
 def GetPatientById(patient_id: str):
