@@ -62,21 +62,21 @@ async def get_patient_by_identifier(system: str, value: str):
         raise HTTPException(status_code=500, detail=f"Internal error. {status}")
 
 # Crear nuevo paciente
-@app.post("/patient", response_model=dict)
+@app.post("/patient")
 async def add_patient(request: Request):
-    try:
-        new_patient_dict = await request.json()
-        print("JSON recibido:", new_patient_dict)
-        status, patient_id = WritePatient(new_patient_dict)
-        if status == 'success':
-            return {"_id": patient_id}
-        elif status.startswith("errorValidating"):
-            return JSONResponse(status_code=400, content={"detail": status})
-        else:
-            return JSONResponse(status_code=500, content={"detail": f"Error en el backend: {status}"})
-    except Exception as e:
-        print("Error inesperado:", e)
-        return JSONResponse(status_code=500, content={"detail": "Error interno del servidor"})
+    data = await request.json()
+    if data.get("resourceType") != "Patient":
+        return JSONResponse(status_code=400, content={"detail": "Tipo de recurso incorrecto, se esperaba 'Patient'"})
+    status, patient_id = WritePatient(data)
+    ...
+
+@app.post("/medicationrequest")
+async def add_medication_request(request: Request):
+    data = await request.json()
+    if data.get("resourceType") != "MedicationRequest":
+        return JSONResponse(status_code=400, content={"detail": "Tipo de recurso incorrecto, se esperaba 'MedicationRequest'"})
+    status, medreq_id = WriteMedicationRequest(data)
+    ...
 
 # Crear solicitud de medicam
 
