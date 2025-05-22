@@ -38,6 +38,10 @@ def WritePatient(patient_dict: dict):
 
 def WriteMedicationRequest(request_dict: dict):
     try:
+        # Adaptar el campo 'medicationCodeableConcept' al nombre que espera el modelo FHIR ('medication')
+        if "medicationCodeableConcept" in request_dict:
+            request_dict["medication"] = request_dict.pop("medicationCodeableConcept")
+
         # Validación FHIR
         med_request = MedicationRequest.model_validate(request_dict)
         validated_data = med_request.model_dump()
@@ -47,6 +51,7 @@ def WriteMedicationRequest(request_dict: dict):
         return "success", str(result.inserted_id)
     except Exception as e:
         return f"errorValidating: {str(e)}", None
+
 
 # Obtener paciente por identificador
 def GetPatientByIdentifier(patientSystem, patientValue):
