@@ -10,7 +10,7 @@ from PatientCrud import (
     GetPatientByIdentifier,
     WriteMedicationRequest
 )
-from sugerencias import ObtenerSugerenciasMedicamentosCompatibles  # ← Asegúrate de tener esto
+from sugerencias import ObtenerSugerenciasMedicamentosCompatibles  
 
 app = FastAPI()
 
