@@ -3,6 +3,8 @@ from bson import ObjectId
 from fhir.resources.patient import Patient
 from fhir.resources.medicationrequest import MedicationRequest
 import json
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 # Conexión a colecciones
 pacientes_collection = connect_to_mongodb("SamplePatientService3", "pacientes")
@@ -38,19 +40,27 @@ def WritePatient(patient_dict: dict):
 
 def WriteMedicationRequest(request_dict: dict):
     try:
-        # Adaptar el campo 'medicationCodeableConcept' al nombre que espera el modelo FHIR ('medication')
-        if "medicationCodeableConcept" in request_dict:
-            request_dict["medication"] = request_dict.pop("medicationCodeableConcept")
-
         # Validación FHIR
         med_request = MedicationRequest.model_validate(request_dict)
         validated_data = med_request.model_dump()
 
         # Insertar en MongoDB
         result = medication_request_collection.insert_one(validated_data)
-        return "success", str(result.inserted_id)
+        return JSONResponse(
+            status_code=201,
+            content=jsonable_encoder({
+                "status": "success",
+                "id": str(result.inserted_id)
+            })
+        )
     except Exception as e:
-        return f"errorValidating: {str(e)}", None
+        return JSONResponse(
+            status_code=422,
+            content=jsonable_encoder({
+                "status": "error",
+                "detail": f"errorValidating: {str(e)}"
+            })
+        )
 
 
 # Obtener paciente por identificador
