@@ -5,6 +5,7 @@ from fhir.resources.medicationrequest import MedicationRequest
 import json
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from datetime import datetime, date
 
 # Conexión a colecciones
 pacientes_collection = connect_to_mongodb("SamplePatientService3", "pacientes")
@@ -12,6 +13,17 @@ historia_collection = connect_to_mongodb("SamplePatientService3", "historiaMedic
 medicamentos_collection = connect_to_mongodb("SamplePatientService3", "medicamentos")
 medication_request_collection = connect_to_mongodb("SamplePatientService3", "medicationRequests")# Nueva colección para medicamentos
 
+def convert_dates(obj):
+    """
+    Convierte datetime.date a datetime.datetime en todo el diccionario.
+    """
+    if isinstance(obj, dict):
+        return {k: convert_dates(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_dates(elem) for elem in obj]
+    elif isinstance(obj, date) and not isinstance(obj, datetime):
+        return datetime.combine(obj, datetime.min.time())
+    return obj
 # Obtener paciente por ID
 def GetPatientById(patient_id: str):
     try:
@@ -30,8 +42,8 @@ def WritePatient(patient_dict: dict):
     except Exception as e:
         return f"errorValidating: {str(e)}", None
 
-    validated_patient_json = pat.model_dump()
-    result = pacientes_collection.insert_one(validated_patient_json)
+    validated_patient_json = convert_dates(validated_patient.dict())
+    pacientes_collection.insert_one(validated_patient_json)
     if result:
         inserted_id = str(result.inserted_id)
         return "success", inserted_id
