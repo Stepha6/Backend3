@@ -63,21 +63,23 @@ async def get_patient_by_identifier(system: str, value: str):
 
 # Crear nuevo paciente
 @app.post("/patient")
-def create_patient(patient: dict = Body(...)):
-    status, result = WritePatient(patient)
-    if status == "success":
-        return {"status": "success", "patient_id": result}
-    else:
-        return JSONResponse(status_code=400, content={"status": "error", "detail": result})
+async def create_patient(request: Request):
+    try:
+        patient = await request.json()
+        result = WritePatient(patient)
+        return result
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
 
 
 @app.post("/medicationrequest")
-def create_medication_request(request: dict = Body(...)):
-    status, result = WriteMedicationRequest(request)
-    if status == "success":
-        return {"status": "success", "request_id": result}
-    else:
-        return JSONResponse(status_code=400, content={"status": "error", "detail": result})
+async def create_medication_request(request: Request):
+    try:
+        med_request = await request.json()
+        response = WriteMedicationRequest(med_request)
+        return response
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
 
 
 # Crear solicitud de medicam
