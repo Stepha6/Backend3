@@ -50,8 +50,10 @@ def WriteMedicationRequest(request_dict: dict):
         med_request = MedicationRequest.model_validate(request_dict)
         validated_data = med_request.model_dump()
 
-        # Insertar en MongoDB
-        result = medication_request_collection.insert_one(validated_data)
+        # ✅ Convertir fechas antes de insertar en MongoDB
+        validated_data_clean = convert_dates(validated_data)
+
+        result = medication_request_collection.insert_one(validated_data_clean)
         return JSONResponse(
             status_code=201,
             content=jsonable_encoder({
