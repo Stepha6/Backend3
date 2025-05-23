@@ -46,11 +46,16 @@ def WritePatient(patient: dict):
 
 def WriteMedicationRequest(request_dict: dict):
     try:
-        # Validación FHIR
+        # Eliminar campos no aceptados por FHIR
+        request_dict.pop("resourceType", None)
+        request_dict.pop("note", None)
+        request_dict.pop("substitution", None)
+
+        # Validar con FHIR
         med_request = MedicationRequest.model_validate(request_dict)
         validated_data = med_request.model_dump()
 
-        # ✅ Convertir fechas antes de insertar en MongoDB
+        # Convertir fechas antes de insertar en MongoDB
         validated_data_clean = convert_dates(validated_data)
 
         result = medication_request_collection.insert_one(validated_data_clean)
@@ -59,6 +64,14 @@ def WriteMedicationRequest(request_dict: dict):
             content=jsonable_encoder({
                 "status": "success",
                 "id": str(result.inserted_id)
+            })
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=422,
+            content=jsonable_encoder({
+                "status": "error",
+                "detail": f"errorValidating: {str(e)}"
             })
         )
     except Exception as e:
