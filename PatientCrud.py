@@ -15,12 +15,12 @@ medication_request_collection = connect_to_mongodb("SamplePatientService3", "med
 
 def convert_dates(obj):
     """
-    Convierte datetime.date a datetime.datetime en todo el diccionario.
+    Recorre el diccionario y convierte todos los datetime.date a datetime.datetime.
     """
     if isinstance(obj, dict):
         return {k: convert_dates(v) for k, v in obj.items()}
     elif isinstance(obj, list):
-        return [convert_dates(elem) for elem in obj]
+        return [convert_dates(item) for item in obj]
     elif isinstance(obj, date) and not isinstance(obj, datetime):
         return datetime.combine(obj, datetime.min.time())
     return obj
@@ -36,19 +36,13 @@ def GetPatientById(patient_id: str):
         return "error", None
 
 # Escribir nuevo paciente
-def WritePatient(patient_dict: dict):
+def WritePatient(patient: dict):
     try:
-        pat = Patient.model_validate(patient_dict)
+        patient_clean = convert_dates(patient)
+        result = pacientes_collection.insert_one(patient_clean)
+        return {"status": "success", "inserted_id": str(result.inserted_id)}
     except Exception as e:
-        return f"errorValidating: {str(e)}", None
-
-    validated_patient_json = convert_dates(validated_patient.dict())
-    pacientes_collection.insert_one(validated_patient_json)
-    if result:
-        inserted_id = str(result.inserted_id)
-        return "success", inserted_id
-    else:
-        return "errorInserting", None
+        return {"status": "error", "detail": str(e)}
 
 def WriteMedicationRequest(request_dict: dict):
     try:
